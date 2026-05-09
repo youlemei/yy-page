@@ -1,0 +1,4 @@
+interface:
+  display_name: "活动前端技术方案"
+  short_description: "梳理活动前端EMP/Astro与F2C技术方案"
+  default_prompt: "请基于需求文档和现有项目，输出活动前端技术方案。"

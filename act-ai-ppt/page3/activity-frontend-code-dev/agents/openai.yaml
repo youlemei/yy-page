@@ -1,0 +1,4 @@
+interface:
+  display_name: "活动前端开发自测"
+  short_description: "按技术方案开发EMP/Astro/F2C代码并自测"
+  default_prompt: "请根据前端技术方案开发活动前端代码，并完成本地自测。"

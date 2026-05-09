@@ -1,0 +1,1073 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>心动PK玩法交互验收示例</title>
+  <style>
+    :root {
+      --bg: #fff7f0;
+      --panel: #ffffff;
+      --ink: #321d24;
+      --muted: #7f6268;
+      --line: rgba(143, 82, 92, .18);
+      --brand: #e7356f;
+      --brand-deep: #b8144b;
+      --warm: #ffb45f;
+      --cool: #61a6ff;
+      --mint: #48b98f;
+      --shadow: 0 18px 40px rgba(119, 41, 65, .16);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 16% 0%, rgba(255, 191, 117, .45), transparent 26rem),
+        radial-gradient(circle at 88% 9rem, rgba(97, 166, 255, .20), transparent 22rem),
+        linear-gradient(180deg, #fff2ee 0%, #fffaf4 46%, #f4fbff 100%);
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      width: min(100%, 430px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 18px 14px 42px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 520px;
+      padding: 26px 18px 22px;
+      border-radius: 20px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(234, 54, 102, .92), rgba(155, 43, 146, .80) 54%, rgba(255, 165, 75, .90)),
+        linear-gradient(180deg, #d92c61, #ff9d5d);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      opacity: .28;
+    }
+
+    .hero::before {
+      inset: -40px -60px auto auto;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      border: 34px solid rgba(255, 255, 255, .45);
+    }
+
+    .hero::after {
+      left: -28px;
+      bottom: 32px;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .16);
+      box-shadow: 220px -70px 0 rgba(255, 255, 255, .12);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 18px;
+    }
+
+    .activity-time {
+      width: fit-content;
+      max-width: 100%;
+      padding: 5px 10px;
+      border: 1px solid rgba(255, 255, 255, .36);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .14);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    .hero h1 {
+      font-size: 35px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      color: rgba(255, 255, 255, .86);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .rule-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .rule-button {
+      min-height: 70px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, .35);
+      border-radius: 14px;
+      color: #fff;
+      background: rgba(255, 255, 255, .16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .24);
+      cursor: pointer;
+      text-align: left;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .rule-button:active {
+      transform: scale(.98);
+    }
+
+    .rule-button strong {
+      display: block;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .rule-button span {
+      display: block;
+      margin-top: 7px;
+      color: rgba(255, 255, 255, .76);
+      font-size: 12px;
+    }
+
+    .thresholds {
+      display: grid;
+      gap: 9px;
+      margin-top: 2px;
+    }
+
+    .threshold {
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255, 255, 255, .18);
+    }
+
+    .threshold b {
+      font-size: 13px;
+      color: #fffad7;
+    }
+
+    .threshold span {
+      color: rgba(255, 255, 255, .82);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .section {
+      margin-top: 16px;
+      padding: 16px 12px 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .86);
+      box-shadow: 0 12px 28px rgba(116, 54, 73, .12);
+      backdrop-filter: blur(16px);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-title h2 {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .pool {
+      color: var(--brand-deep);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 5px;
+      border-radius: 12px;
+      background: #f4edf0;
+      border: 1px solid var(--line);
+    }
+
+    .tab {
+      min-height: 38px;
+      border: 0;
+      border-radius: 9px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 700;
+      cursor: pointer;
+      transition: color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .tab.is-active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--brand), #ff7f62);
+      box-shadow: 0 8px 18px rgba(231, 53, 111, .24);
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .match-card {
+      display: none;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+
+    .match-card.is-visible {
+      display: block;
+    }
+
+    .match-head {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 34px 1fr;
+      gap: 8px;
+      align-items: start;
+      padding: 12px 12px 8px;
+    }
+
+    .room {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      min-width: 0;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .avatar {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      color: #fff;
+      border: 3px solid #fff;
+      box-shadow: 0 8px 18px rgba(54, 31, 37, .14);
+      font-weight: 800;
+      background: linear-gradient(135deg, #f35176, #ffa254);
+    }
+
+    .room:nth-child(3) .avatar {
+      background: linear-gradient(135deg, #4c9eff, #55c8a6);
+    }
+
+    .room-name {
+      max-width: 118px;
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .vs {
+      align-self: center;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      color: #fff;
+      background: #24191d;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 22px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .tag-win {
+      color: #fff;
+      background: var(--brand);
+    }
+
+    .tag-lose {
+      color: #6d5960;
+      background: #f2e8ea;
+    }
+
+    .tag-rain {
+      color: #803a00;
+      background: #ffe2a7;
+    }
+
+    .tag-live {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: #fff;
+      background: var(--mint);
+    }
+
+    .room-tags {
+      display: flex;
+      min-height: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .pk {
+      padding: 0 12px 12px;
+    }
+
+    .pk-values {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .bar {
+      display: grid;
+      grid-template-columns: var(--left, 50%) 1fr;
+      overflow: hidden;
+      height: 10px;
+      margin-top: 6px;
+      border-radius: 999px;
+      background: #e8eef7;
+    }
+
+    .bar i {
+      display: block;
+      min-width: 0;
+      background: linear-gradient(90deg, var(--brand), #ff9258);
+    }
+
+    .bar em {
+      display: block;
+      min-width: 0;
+      background: linear-gradient(90deg, #69bbff, #5bd5a3);
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #fff9f6;
+    }
+
+    .meta-item {
+      min-width: 0;
+    }
+
+    .meta-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .meta-item b {
+      display: block;
+      margin-top: 3px;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .hosts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 11px 12px 12px;
+    }
+
+    .host-side h3 {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.3;
+      margin-bottom: 7px;
+    }
+
+    .host {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      min-height: 24px;
+      color: #553d44;
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .host strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .host span {
+      flex: none;
+      color: var(--brand-deep);
+      font-weight: 800;
+    }
+
+    .more-wrap {
+      display: grid;
+      place-items: center;
+      margin-top: 13px;
+    }
+
+    .more-button {
+      min-width: 150px;
+      min-height: 38px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, #2f2228, #6a3a47);
+      box-shadow: 0 10px 22px rgba(59, 35, 42, .18);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: end;
+      justify-content: center;
+      padding: 14px;
+      background: rgba(35, 22, 27, .56);
+    }
+
+    .modal-mask.is-open {
+      display: flex;
+    }
+
+    .modal {
+      width: min(100%, 430px);
+      max-height: min(82vh, 720px);
+      overflow: hidden;
+      border-radius: 20px 20px 16px 16px;
+      background: #fff;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .24);
+      animation: rise .18s ease-out;
+    }
+
+    @keyframes rise {
+      from {
+        transform: translateY(18px);
+        opacity: .7;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .close {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 50%;
+      color: #5d444c;
+      background: #f4edf0;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .modal-body {
+      max-height: calc(min(82vh, 720px) - 64px);
+      overflow: auto;
+      padding: 14px 16px 18px;
+    }
+
+    .reward-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+
+    .reward-table th,
+    .reward-table td {
+      padding: 9px 7px;
+      border: 1px solid #f0dde2;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.35;
+    }
+
+    .reward-table th {
+      color: #7c2d43;
+      background: #fff0f4;
+      font-weight: 800;
+    }
+
+    .rule-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .rule-list li {
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff9f6;
+      color: #5d444c;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      z-index: 30;
+      display: none;
+      max-width: calc(100vw - 44px);
+      transform: translateX(-50%);
+      padding: 9px 13px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(38, 27, 31, .92);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .toast.is-show {
+      display: block;
+    }
+
+    @media (min-width: 760px) {
+      .page {
+        width: min(100%, 760px);
+        padding-top: 28px;
+      }
+
+      .hero {
+        min-height: 460px;
+        padding: 34px 30px;
+      }
+
+      .hero h1 {
+        font-size: 46px;
+      }
+
+      .thresholds {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .list {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+
+      .match-card {
+        height: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" aria-labelledby="pageTitle">
+      <div class="hero-inner">
+        <div class="activity-time">520 活动期间开启</div>
+        <h1 id="pageTitle">心动PK</h1>
+        <p class="hero-copy">
+          跨厅 PK 随机匹配下，双方总 PK 值达到 2000W 后自动进入心动模式。剩余时间内按活动礼物累计心动值，获胜强厅贡献前 3 主持可获得梯度奖励。
+        </p>
+
+        <div class="rule-actions" aria-label="规则入口">
+          <button class="rule-button" type="button" data-modal="hostReward">
+            <strong>主持奖励</strong>
+            <span>查看详情</span>
+          </button>
+          <button class="rule-button" type="button" data-modal="loveRain">
+            <strong>心动爱雨</strong>
+            <span>查看详情</span>
+          </button>
+        </div>
+
+        <div class="thresholds" aria-label="心动值奖励梯度">
+          <div class="threshold">
+            <b>0-100W</b>
+            <span>第 1/2/3 名主持可获得 52Y、28Y、19.9Y 奖励。</span>
+          </div>
+          <div class="threshold">
+            <b>100-300W</b>
+            <span>第 1/2/3 名主持可获得 104Y、56Y、39.8Y 奖励。</span>
+          </div>
+          <div class="threshold">
+            <b>300-500W</b>
+            <span>第 1/2/3 名主持可获得 156Y、84Y、59.7Y 奖励。</span>
+          </div>
+          <div class="threshold">
+            <b>500W 以上</b>
+            <span>第 1/2/3 名主持可获得 208Y、112Y、79.6Y 奖励。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="matchTitle">
+      <div class="section-title">
+        <h2 id="matchTitle">心动PK对局</h2>
+        <div class="pool">礼物奖池剩余 48,620.0 元</div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="对局列表切换">
+        <button id="tab-current" class="tab is-active" type="button" role="tab" aria-selected="true" aria-controls="panel-current" data-tab="current">当前心动对局</button>
+        <button id="tab-history" class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-history" data-tab="history">历史心动对局</button>
+      </div>
+
+      <div id="panel-current" class="panel" role="tabpanel" aria-labelledby="tab-current"></div>
+      <div id="panel-history" class="panel" role="tabpanel" aria-labelledby="tab-history" hidden></div>
+    </section>
+  </main>
+
+  <div class="modal-mask" id="modalMask" aria-hidden="true">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <h2 class="modal-title" id="modalTitle">规则详情</h2>
+        <button class="close" type="button" aria-label="关闭弹窗">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const panels = {
+      current: document.querySelector("#panel-current"),
+      history: document.querySelector("#panel-history")
+    };
+
+    const listState = {
+      current: { expanded: false, initialCount: 2 },
+      history: { expanded: false, initialCount: 2 }
+    };
+
+    const matches = {
+      current: [
+        {
+          roomA: "蜜桃心动厅",
+          roomB: "星河告白厅",
+          aScore: 15860000,
+          bScore: 14320000,
+          status: "rain",
+          rainSide: "A",
+          startTime: "05-20 20:18",
+          heartValue: "526.8W",
+          hostsA: [["小南", "182W"], ["晴晴", "145W"], ["阿洛", "91W"]],
+          hostsB: [["慕白", "166W"], ["七月", "119W"], ["小鹿", "87W"]]
+        },
+        {
+          roomA: "初夏热恋厅",
+          roomB: "月光来信厅",
+          aScore: 11680000,
+          bScore: 12290000,
+          status: "live",
+          startTime: "05-20 20:41",
+          heartValue: "318.4W",
+          hostsA: [["舟舟", "103W"], ["一一", "92W"], ["可乐", "64W"]],
+          hostsB: [["眠眠", "138W"], ["西米", "116W"], ["蓝莓", "71W"]]
+        },
+        {
+          roomA: "甜橙派对厅",
+          roomB: "云朵心跳厅",
+          aScore: 10450000,
+          bScore: 9800000,
+          status: "live",
+          startTime: "05-20 21:03",
+          heartValue: "184.6W",
+          hostsA: [["圆圆", "86W"], ["柚子", "51W"], ["安安", "38W"]],
+          hostsB: [["沐沐", "75W"], ["星星", "48W"], ["豆豆", "29W"]]
+        },
+        {
+          roomA: "心跳频率厅",
+          roomB: "玫瑰信号厅",
+          aScore: 13980000,
+          bScore: 13110000,
+          status: "rain",
+          rainSide: "A",
+          startTime: "05-20 20:26",
+          heartValue: "472.5W",
+          hostsA: [["奈奈", "162W"], ["阿川", "128W"], ["乔乔", "84W"]],
+          hostsB: [["森森", "151W"], ["知知", "105W"], ["宁宁", "76W"]]
+        }
+      ],
+      history: [
+        {
+          roomA: "花火恋曲厅",
+          roomB: "晚风情书厅",
+          aScore: 17250000,
+          bScore: 15400000,
+          status: "finished",
+          winner: "A",
+          startTime: "05-20 19:36",
+          heartValue: "612.2W",
+          hostsA: [["小满", "208W"], ["木子", "168W"], ["千寻", "119W"]],
+          hostsB: [["迟迟", "177W"], ["阿眠", "143W"], ["禾禾", "96W"]]
+        },
+        {
+          roomA: "微醺告白厅",
+          roomB: "银河心语厅",
+          aScore: 12690000,
+          bScore: 14170000,
+          status: "finished",
+          winner: "B",
+          startTime: "05-20 19:08",
+          heartValue: "389.7W",
+          hostsA: [["橙子", "99W"], ["糖糖", "88W"], ["川川", "62W"]],
+          hostsB: [["南风", "156W"], ["洛洛", "121W"], ["米米", "85W"]]
+        },
+        {
+          roomA: "粉色星球厅",
+          roomB: "心动电台厅",
+          aScore: 9800000,
+          bScore: 9150000,
+          status: "finished",
+          winner: "A",
+          startTime: "05-20 18:44",
+          heartValue: "231.5W",
+          hostsA: [["久久", "118W"], ["小椰", "76W"], ["白茶", "53W"]],
+          hostsB: [["然然", "82W"], ["秋秋", "69W"], ["小鱼", "48W"]]
+        },
+        {
+          roomA: "落日晚安厅",
+          roomB: "蓝调心愿厅",
+          aScore: 13630000,
+          bScore: 12940000,
+          status: "finished",
+          winner: "A",
+          startTime: "05-20 18:12",
+          heartValue: "504.1W",
+          hostsA: [["明月", "171W"], ["北北", "136W"], ["林溪", "88W"]],
+          hostsB: [["池夏", "149W"], ["小叶", "104W"], ["半夏", "73W"]]
+        }
+      ]
+    };
+
+    const modalContent = {
+      hostReward: {
+        title: "主持奖励详情",
+        html: `
+          <table class="reward-table">
+            <thead>
+              <tr>
+                <th>本场累计心动值</th>
+                <th>贡献主持</th>
+                <th>奖励价值</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="3">0-100W</td><td>第 1 名</td><td>52Y</td></tr>
+              <tr><td>第 2 名</td><td>28Y</td></tr>
+              <tr><td>第 3 名</td><td>19.9Y</td></tr>
+              <tr><td rowspan="3">100W-300W</td><td>第 1 名</td><td>104Y</td></tr>
+              <tr><td>第 2 名</td><td>56Y</td></tr>
+              <tr><td>第 3 名</td><td>39.8Y</td></tr>
+              <tr><td rowspan="3">300W-500W</td><td>第 1 名</td><td>156Y</td></tr>
+              <tr><td>第 2 名</td><td>84Y</td></tr>
+              <tr><td>第 3 名</td><td>59.7Y</td></tr>
+              <tr><td rowspan="3">500W 以上</td><td>第 1 名</td><td>208Y</td></tr>
+              <tr><td>第 2 名</td><td>112Y</td></tr>
+              <tr><td>第 3 名</td><td>79.6Y</td></tr>
+            </tbody>
+          </table>
+        `
+      },
+      loveRain: {
+        title: "心动爱雨详情",
+        html: `
+          <ul class="rule-list">
+            <li>获胜房间触发 3 分钟心动爱雨，房间内所有用户可点击参与抽奖。</li>
+            <li>用户集齐 15 个爱心图案时，抽奖必定中奖；未收集爱心则不参与抽奖。</li>
+            <li>奖励包含进场秀、聊天气泡、头像框、年度助力票等，每场心动爱雨每个用户只能参与一次。</li>
+            <li>若用户提前关闭爱心特效，本次抽奖直接结束，不发放奖励。</li>
+          </ul>
+        `
+      }
+    };
+
+    function formatScore(score) {
+      return `${(score / 10000).toFixed(0)}W`;
+    }
+
+    function getInitial(name) {
+      return name.replace("厅", "").slice(0, 2);
+    }
+
+    function roomTags(match, side) {
+      if (match.status === "live") {
+        return "";
+      }
+
+      const tags = [];
+      const isWinner = match.winner === side || match.rainSide === side;
+      tags.push(`<span class="tag ${isWinner ? "tag-win" : "tag-lose"}">${isWinner ? "胜" : "负"}</span>`);
+
+      if (match.rainSide === side) {
+        tags.push(`<span class="tag tag-rain">心动爱雨</span>`);
+      }
+
+      return tags.join("");
+    }
+
+    function renderHosts(title, hosts) {
+      return `
+        <div class="host-side">
+          <h3>${title}</h3>
+          ${hosts.map((host, index) => `
+            <div class="host">
+              <strong>TOP${index + 1} ${host[0]}</strong>
+              <span>${host[1]}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderMatch(match, index, tab) {
+      const total = match.aScore + match.bScore;
+      const leftPercent = Math.max(18, Math.min(82, Math.round(match.aScore / total * 100)));
+      const liveTag = match.status === "live" ? `<span class="tag tag-live">心动PK进行中</span>` : "";
+
+      return `
+        <article class="match-card" data-index="${index}" data-tab-card="${tab}">
+          <div class="match-head">
+            ${liveTag}
+            <a class="room" href="#room-${index}-a" data-room="${match.roomA}" aria-label="进入${match.roomA}">
+              <div class="avatar">${getInitial(match.roomA)}</div>
+              <div class="room-name">${match.roomA}</div>
+              <div class="room-tags">${roomTags(match, "A")}</div>
+            </a>
+            <div class="vs">VS</div>
+            <a class="room" href="#room-${index}-b" data-room="${match.roomB}" aria-label="进入${match.roomB}">
+              <div class="avatar">${getInitial(match.roomB)}</div>
+              <div class="room-name">${match.roomB}</div>
+              <div class="room-tags">${roomTags(match, "B")}</div>
+            </a>
+          </div>
+          <div class="pk">
+            <div class="pk-values">
+              <span>${formatScore(match.aScore)}</span>
+              <span>${formatScore(match.bScore)}</span>
+            </div>
+            <div class="bar" style="--left:${leftPercent}%"><i></i><em></em></div>
+          </div>
+          <div class="meta">
+            <div class="meta-item">
+              <span>场次开始时间</span>
+              <b>${match.startTime}</b>
+            </div>
+            <div class="meta-item">
+              <span>本场累计心动值</span>
+              <b>${match.heartValue}</b>
+            </div>
+          </div>
+          <div class="hosts">
+            ${renderHosts("左侧贡献前 3", match.hostsA)}
+            ${renderHosts("右侧贡献前 3", match.hostsB)}
+          </div>
+        </article>
+      `;
+    }
+
+    function renderPanel(tab) {
+      const cards = matches[tab].map((match, index) => renderMatch(match, index, tab)).join("");
+      panels[tab].innerHTML = `
+        <div class="list">${cards}</div>
+        <div class="more-wrap">
+          <button class="more-button" type="button" data-more="${tab}"></button>
+        </div>
+      `;
+      updateVisibility(tab);
+    }
+
+    function updateVisibility(tab) {
+      const state = listState[tab];
+      const visibleCount = state.expanded ? matches[tab].length : state.initialCount;
+      panels[tab].querySelectorAll(".match-card").forEach((card, index) => {
+        card.classList.toggle("is-visible", index < visibleCount);
+      });
+
+      const button = panels[tab].querySelector("[data-more]");
+      const hiddenCount = Math.max(0, matches[tab].length - state.initialCount);
+      if (hiddenCount === 0) {
+        button.hidden = true;
+        return;
+      }
+
+      button.hidden = false;
+      button.textContent = state.expanded ? "收起" : `展开查看更多 ${hiddenCount} 场`;
+    }
+
+    function switchTab(nextTab) {
+      document.querySelectorAll(".tab").forEach((button) => {
+        const active = button.dataset.tab === nextTab;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-selected", String(active));
+      });
+
+      Object.entries(panels).forEach(([key, panel]) => {
+        panel.hidden = key !== nextTab;
+      });
+    }
+
+    function openModal(type) {
+      const mask = document.querySelector("#modalMask");
+      const content = modalContent[type];
+      document.querySelector("#modalTitle").textContent = content.title;
+      document.querySelector("#modalBody").innerHTML = content.html;
+      mask.classList.add("is-open");
+      mask.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      const mask = document.querySelector("#modalMask");
+      mask.classList.remove("is-open");
+      mask.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    let toastTimer;
+    function showToast(text) {
+      const toast = document.querySelector("#toast");
+      toast.textContent = text;
+      toast.classList.add("is-show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("is-show"), 1500);
+    }
+
+    renderPanel("current");
+    renderPanel("history");
+
+    document.addEventListener("click", (event) => {
+      const modalButton = event.target.closest("[data-modal]");
+      if (modalButton) {
+        openModal(modalButton.dataset.modal);
+        return;
+      }
+
+      const tabButton = event.target.closest("[data-tab]");
+      if (tabButton) {
+        switchTab(tabButton.dataset.tab);
+        return;
+      }
+
+      const moreButton = event.target.closest("[data-more]");
+      if (moreButton) {
+        const tab = moreButton.dataset.more;
+        listState[tab].expanded = !listState[tab].expanded;
+        updateVisibility(tab);
+        return;
+      }
+
+      const roomLink = event.target.closest("[data-room]");
+      if (roomLink) {
+        event.preventDefault();
+        showToast(`模拟跳转至 ${roomLink.dataset.room}`);
+        return;
+      }
+
+      if (event.target.id === "modalMask" || event.target.closest(".close")) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
